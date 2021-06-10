@@ -155,7 +155,7 @@ def display(ical):
     if "attendee" in ical.vevent.contents:
         attendees = ical.vevent.contents["attendee"]
     else:
-        attendees = ""
+        attendees = []
     sys.stdout.write("From:\t" + sender + "\n")
     sys.stdout.write("Title:\t" + summary + "\n")
     sys.stdout.write("To:\t")
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     if "attendee" in invitation.vevent.contents:
         attendees = invitation.vevent.contents["attendee"]
     else:
-        attendees = ""
+        attendees = []
     set_accept_state(attendees, accept_decline)
     ans.vevent.add("attendee")
     ans.vevent.attendee_list.pop()
