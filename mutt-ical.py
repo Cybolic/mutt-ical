@@ -3,9 +3,10 @@
 """
 This script is meant as a simple way to reply to ical invitations from mutt.
 See README for instructions and LICENSE for licensing information.
+This is a fork meant to update and clean the code.
 """
 
-__author__ = "Martin Sander"
+__author__ = "Martin Sander, Christian Dannie Storgaard"
 __license__ = "MIT"
 
 import vobject
