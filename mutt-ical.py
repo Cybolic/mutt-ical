@@ -139,6 +139,25 @@ def open_ics(invitation_file):
     return invitation
 
 
+def get_attendee_email_address(attendee):
+    if hasattr(attendee, "EMAIL_param"):
+        return attendee.EMAIL_param
+    else:
+        return attendee.value.split(":")[1]
+
+
+def attendee_to_display_string(attendee):
+    common_name = ""
+    email_address = get_attendee_email_address(attendee)
+
+    if hasattr(attendee, "CN_param"):
+        common_name = attendee.CN_param
+    else:
+        common_name = attendee.value.split(":")[1]
+
+    return "{} <{}>".format(common_name, email_address)
+
+
 def display(ical):
     summary = ical.vevent.contents["summary"][0].value
     if "organizer" in ical.vevent.contents:
@@ -160,20 +179,7 @@ def display(ical):
     sys.stdout.write("Title:\t" + summary + "\n")
     sys.stdout.write("To:\t")
     for attendee in attendees:
-        if hasattr(attendee, "EMAIL_param"):
-            sys.stdout.write(attendee.CN_param + " <" + attendee.EMAIL_param + ">, ")
-        else:
-            try:
-                sys.stdout.write(
-                    attendee.CN_param + " <" + attendee.value.split(":")[1] + ">, "
-                )  # workaround for MS
-            except:
-                sys.stdout.write(
-                    attendee.value.split(":")[1]
-                    + " <"
-                    + attendee.value.split(":")[1]
-                    + ">, "
-                )  # workaround for 'mailto:' in email
+        sys.stdout.write(attendee_to_display_string(attendee) + ", ")
     sys.stdout.write("\n")
     if hasattr(ical.vevent, "dtstart"):
         print("Start:\t%s" % (ical.vevent.dtstart.value,))
@@ -216,17 +222,14 @@ if __name__ == "__main__":
     set_accept_state(attendees, accept_decline)
     ans.vevent.add("attendee")
     ans.vevent.attendee_list.pop()
-    flag = 1
+
+    is_own_email_in_attendees = False
     for attendee in attendees:
-        if hasattr(attendee, "EMAIL_param"):
-            if attendee.EMAIL_param == email_address:
-                ans.vevent.attendee_list.append(attendee)
-                flag = 0
-        else:
-            if attendee.value.split(":")[1] == email_address:
-                ans.vevent.attendee_list.append(attendee)
-                flag = 0
-    if flag:
+        if get_attendee_email_address(attendee) == email_address:
+            ans.vevent.attendee_list.append(attendee)
+            is_own_email_in_attendees = True
+
+    if is_own_email_in_attendees == False:
         sys.stderr.write("Seems like you have not been invited to this event!\n")
         sys.exit(1)
 
