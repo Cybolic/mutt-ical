@@ -44,7 +44,7 @@ def set_accept_state(attendees, state):
     return attendees
 
 
-def get_accept_decline():
+def ask_accept_decline():
     while True:
         sys.stdout.write("\nAccept Invitation? [Y/n/t]")
         ans = sys.stdin.readline()
@@ -128,7 +128,7 @@ def execute(command, mailtext):
         sys.stdin.readline()
 
 
-def openics(invitation_file):
+def open_ics(invitation_file):
     with open(invitation_file) as f:
         try:
             with warnings.catch_warnings():  # vobject uses deprecated Exception stuff
@@ -192,14 +192,14 @@ if __name__ == "__main__":
         sys.stderr.write(usage)
         sys.exit(1)
 
-    invitation = openics(args[0])
+    invitation = open_ics(args[0])
     display(invitation)
 
     for opt, arg in opts:
         if opt == "-e":
             email_address = arg
         if opt == "-i":
-            accept_decline = get_accept_decline()
+            accept_decline = ask_accept_decline()
         if opt == "-a":
             accept_decline = "ACCEPTED"
         if opt == "-d":
